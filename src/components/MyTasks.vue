@@ -22,6 +22,16 @@ export default {
             }
         },
         async submitForm() {
+            // clear trailing and leading spaces
+            this.title = this.title.trim();
+            this.description = this.description.trim();
+
+            // check if such field is blank. if so, dont submit form
+            if (!this.title || !this.description) {
+                alert('Title and description cannot be empty!');
+                return;
+            }
+
             try {
                 // send POST request to the API
                 const response = await this.$http.post('http://localhost:8000/api/tasks/', {
@@ -62,14 +72,16 @@ export default {
 
             console.log('Deleting task:', task);
             // Confirm if one wants to delete the task
-            let confirmation = confirm("Do you want to delete this task?");
+            let confirmation = confirm("Do you want to delete [" + task.id + "] task?");
 
             if (confirmation) {
                 try {
 
                     // Send a request to delete the task
-                    await this.$http.delete(`http://localhost:8000/api/tasks/${task.id}`);
+                    await this.$http.delete(`http://localhost:8000/api/tasks/${task.id}/`);
 
+                    this.tasks = this.tasks.filter(t => t.id != task.id);
+                    console.log(`Deleting this id: ${task.id.value}`);
                     console.log('Task deleted sucessfully.');
                     // Refresh the tasks
                     this.getData();
@@ -125,6 +137,12 @@ export default {
     font-family: 'Courier New', Courier, monospace;
 }
 
+button {
+    padding: 10px 15px;
+    border-radius: 8px;
+    border: none;
+}
+
 .tasks-container {
     padding: 2% 15%;
 }
@@ -137,6 +155,7 @@ export default {
 
 .items {
     padding: 10px 15px;
+    margin: 15px;
     border: 2px solid purple;
     border-radius: 15px;
 }
@@ -147,11 +166,28 @@ export default {
     flex-direction: column;
 }
 
+.form-group label {
+    font-size: 18px;
+    font-weight: 600;
+    padding: 5px;
+}
+
+.form-group input,
+textarea {
+    border-radius: 8px;
+    font-size: 18px;
+    font-weight: 500;
+}
+
 .form-control {
     padding: 10px;
     border: none;
     outline: none;
     background: purple;
     color: white;
+}
+
+.items button {
+    margin: 5px;
 }
 </style>
