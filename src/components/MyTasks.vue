@@ -17,6 +17,7 @@ export default {
                 const response = await this.$http.get('http://localhost:8000/api/tasks/');
                 // set the data returned as tasks
                 this.tasks = response.data
+                this.tasks.reverse()
             } catch (error) {
                 console.log(error);
             }
@@ -41,7 +42,10 @@ export default {
                 });
                 console.log('Response data after adding tasks:', response.data);
                 // append the returned data to the tasks array
-                this.tasks.push(response.data);
+                // this.tasks.push(response.data);
+
+                // prepend the returned data to the tasks array
+                this.tasks.unshift(response.data)
 
                 // reset the title and description fields
                 this.title = ''
