@@ -12,10 +12,14 @@ export default {
                 { id: 1, name: "Task 1", status: "Pending", startTime: "10:00 AM", endTime: "11:00 AM" },
                 { id: 2, name: "Task 2", status: "Completed", startTime: "11:00 AM", endTime: "12:00 PM" },
                 // Add more tasks as needed
-            ]
+            ],
+            taskToUpdate: null
         };
     },
     methods: {
+        addTask(newTask) {
+            this.tasks.push(newTask);
+        },
         updateTask(taskId) {
             // Handle task update logic here
             console.log(`Update task with ID: ${taskId}`);
@@ -62,9 +66,8 @@ export default {
             </table>
         </main>
 
-        <CreateNewTask :visible="showCreateNew" @close="showCreateNew = false" title="Add New Task">
-            <p>This is where the form for adding a new task will go.</p>
-        </CreateNewTask>
+        <CreateNewTask :visible="showCreateNew" @close="showCreateNew = false" @add-task="addTask"
+            title="Add New Task" />
     </div>
 </template>
 
