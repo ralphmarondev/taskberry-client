@@ -1,5 +1,5 @@
 <script>
-import HomeScreen from './home/HomeScreen.vue';
+import HomeScreen from './screens/HomeScreen.vue'
 
 export default {
   name: 'App',
