@@ -6,11 +6,20 @@ export default {
             tasks: [],
             loading: true,
 
-            showModal: false,
+            showAddModal: false,
+            showUpdateModal: false,
             newTask: {
                 description: '',
-                completed: '',
-                priority: '',
+                completed: false,
+                priority: 1,
+                start_time: '',
+                end_time: ''
+            },
+            selectedTask: {
+                id: '',
+                description: '',
+                completed: false,
+                priority: 1,
                 start_time: '',
                 end_time: ''
             }
@@ -26,18 +35,19 @@ export default {
                 console.log(error);
             }
         },
+
         // Modals
-        openModal() {
-            this.showModal = true;
+        openAddModal() {
+            this.showAddModal = true;
         },
-        closeModal() {
-            this.showModal = false;
+        closeAddModal() {
+            this.showAddModal = false;
         },
         async addTask() {
             try {
                 let response = await this.$http.post('http://localhost:8000/api/tasks/', this.newTask);
                 this.tasks.push(response.data);
-                this.closeModal();
+                this.closeAddModal();
                 this.newTask = {
                     description: '',
                     completed: false,
@@ -47,6 +57,31 @@ export default {
                 }
             } catch (error) {
                 console.log(`Error adding: ${error}`);
+            }
+        },
+
+        openUpdateModal(task) {
+            this.selectedTask = {
+                ...task,
+                start_time: task.start_time ? task.start_time.slice(0, 16) : '',
+                end_time: task.end_time ? task.end_time.slice(0, 16) : ''
+            };
+            this.showUpdateModal = true;
+        },
+        closeUpdateModal() {
+            this.showUpdateModal = false;
+        },
+        async updateTask() {
+            try {
+                let response = await this.$http.put(`http://localhost:8000/api/tasks/${this.selectedTask.id}/`, this.selectedTask);
+                let index = this.tasks.findIndex(task => task.id === this.selectedTask.id);
+
+                if (index !== -1) {
+                    this.tasks.splice(index, 1, response.data);
+                }
+                this.closeUpdateModal();
+            } catch (error) {
+                console.log(`Error: ${error}`);
             }
         }
     },
@@ -61,7 +96,7 @@ export default {
     <div>
         <header>
             <div class="logo">Todo App</div>
-            <div class="action" @click="openModal">New</div>
+            <div class="action" @click="openAddModal">New</div>
         </header>
 
         <main>
@@ -86,7 +121,7 @@ export default {
                         <td class="medium-column">{{ task.priority }}</td>
                         <td class="medium-column">{{ task.start_time }}</td>
                         <td class="medium-column">{{ task.end_time }}</td>
-                        <td class="medium-column"><button>Update</button></td>
+                        <td class="medium-column"><button @click="openUpdateModal(task)">Update</button></td>
                         <td class="medium-column"><button>Delete</button></td>
                     </tr>
                 </tbody>
@@ -94,9 +129,9 @@ export default {
         </main>
 
         <!-- Modals -->
-        <div v-if="showModal" class="modal">
+        <div v-if="showAddModal" class="modal">
             <div class="modal-content">
-                <span class="close" @click="closeModal">&times;</span>
+                <span class="close" @click="closeAddModal">&times;</span>
                 <h2>Add New Task</h2>
 
                 <form @submit.prevent="addTask">
@@ -124,6 +159,35 @@ export default {
             </div>
         </div>
 
+        <div v-if="showUpdateModal" class="modal">
+            <div class="modal-content">
+                <span class="close" @click="closeUpdateModal">&times;</span>
+                <h2>Update Task</h2>
+
+                <form @submit.prevent="updateTask">
+                    <label for="description">Description:</label>
+                    <input type="text" id="description" v-model="selectedTask.description" required>
+
+                    <label for="completed">Completed:</label>
+                    <input type="checkbox" id="completed" v-model="selectedTask.completed">
+
+                    <label for="priority">Priority:</label>
+                    <select id="priority" v-model="selectedTask.priority" required>
+                        <option value="1">Low</option>
+                        <option value="2">Medium</option>
+                        <option value="3">High</option>
+                    </select>
+
+                    <label for="start_time">Start Time:</label>
+                    <input type="datetime-local" id="start_time" v-model="selectedTask.start_time" required>
+
+                    <label for="end_time">End Time:</label>
+                    <input type="datetime-local" id="end_time" v-model="selectedTask.end_time" required>
+
+                    <button type="submit">Update Task</button>
+                </form>
+            </div>
+        </div>
     </div>
 </template>
 
