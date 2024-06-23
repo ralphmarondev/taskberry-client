@@ -27,6 +27,16 @@ export default {
 
 <template>
     <div>
+        <header>
+            <div class="logo">Todo App</div>
+            <div class="action">New</div>
+        </header>
+
+        <main>
+
+        </main>
+
+
         <h1>Task List</h1>
         <div v-if="loading">Loading...</div>
         <div v-else>
@@ -45,3 +55,8 @@ export default {
         </div>
     </div>
 </template>
+
+<style>
+@import url('css/style.css');
+@import url('css/header.css');
+</style>
