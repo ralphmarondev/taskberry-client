@@ -83,6 +83,47 @@ export default {
             } catch (error) {
                 console.log(`Error: ${error}`);
             }
+        },
+
+        async deleteTask(taskId) {
+            try {
+                await this.$http.delete(`http://localhost:8000/api/tasks/${taskId}/`);
+                this.tasks = this.tasks.filter(task => task.id !== taskId);
+            } catch (error) {
+                console.log(`Deleting error: ${error}`);
+            }
+        },
+
+        // refactoring
+        getPriorityLabel(priority) {
+            switch (priority) {
+                case 1:
+                    return 'low';
+                case 2:
+                    return 'medium';
+                case 3:
+                    return 'high';
+                default:
+                    return '';
+            }
+        },
+        formatDateTime(dateTimeStr) {
+            if (!dateTimeStr)
+                return '';
+
+            const date = new Date(dateTimeStr);
+            const day = date.getDate();
+            const month = date.toLocaleString('default', { month: 'short' });
+            const year = date.getFullYear();
+            let hours = date.getHours();
+            const minutes = date.getMinutes();
+            const period = hours >= 12 ? 'pm' : 'am';
+
+            // convert 24-hour format to 12-hour format
+            hours = hours % 12
+            hours = hours ? hours : 12; // midnigh (0 hours)
+
+            return `${day}-${month}-${year} ${hours}:${minutes.toString().padStart(2, '0')} ${period}`;
         }
     },
     created() {
@@ -118,11 +159,11 @@ export default {
                         <td class="small-column">{{ task.id }}</td>
                         <td class="large-column">{{ task.description }}</td>
                         <td class="medium-column">{{ task.completed }}</td>
-                        <td class="medium-column">{{ task.priority }}</td>
-                        <td class="medium-column">{{ task.start_time }}</td>
-                        <td class="medium-column">{{ task.end_time }}</td>
+                        <td class="medium-column">{{ getPriorityLabel(task.priority) }}</td>
+                        <td class="medium-column">{{ formatDateTime(task.start_time) }}</td>
+                        <td class="medium-column">{{ formatDateTime(task.end_time) }}</td>
                         <td class="medium-column"><button @click="openUpdateModal(task)">Update</button></td>
-                        <td class="medium-column"><button>Delete</button></td>
+                        <td class="medium-column"><button @click="deleteTask(task.id)">Delete</button></td>
                     </tr>
                 </tbody>
             </table>
