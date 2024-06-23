@@ -35,7 +35,7 @@ export default {
                 this.tasks = response.data
                 this.loading = false;
 
-                this.sortTasks();
+                this.updateTaskList();
             } catch (error) {
                 console.log(error);
             }
@@ -48,7 +48,7 @@ export default {
         closeAddModal() {
             this.showAddModal = false;
 
-            this.sortTasks();
+            this.fetchTasks();
         },
         async addTask() {
             try {
@@ -63,7 +63,7 @@ export default {
                     end_time: ''
                 }
 
-                this.sortTasks();
+                this.fetchTasks();
             } catch (error) {
                 console.log(`Error adding: ${error}`);
             }
@@ -80,7 +80,7 @@ export default {
         closeUpdateModal() {
             this.showUpdateModal = false;
 
-            this.sortTasks();
+            this.fetchTasks();
         },
         async updateTask() {
             try {
@@ -91,7 +91,6 @@ export default {
                     this.tasks.splice(index, 1, response.data);
                 }
                 this.closeUpdateModal();
-                this.sortTasks();
             } catch (error) {
                 console.log(`Error: ${error}`);
             }
@@ -101,7 +100,8 @@ export default {
             try {
                 await this.$http.delete(`http://localhost:8000/api/tasks/${taskId}/`);
                 this.tasks = this.tasks.filter(task => task.id !== taskId);
-                this.sortTasks();
+
+                this.fetchTasks();
             } catch (error) {
                 console.log(`Deleting error: ${error}`);
             }
@@ -151,7 +151,35 @@ export default {
             });
         },
         updateTaskList() {
+            this.notCompletedTask = this.tasks.filter(task => !task.completed);
+            this.completedTasks = this.tasks.filter(task => task.completed);
 
+            this.sortCompletedTasks();
+            this.sortNotCompletedTasks();
+        },
+        sortCompletedTasks() {
+            this.completedTasks.sort((a, b) => {
+                // completion status
+                if (a.completed !== b.completed) {
+                    return a.completed ? 1 : -1;
+                }
+
+                if (a.priority !== b.priority) {
+                    return b.priority - a.priority;
+                }
+            });
+        },
+        sortNotCompletedTasks() {
+            this.notCompletedTask.sort((a, b) => {
+                // completion status
+                if (a.completed !== b.completed) {
+                    return a.completed ? 1 : -1;
+                }
+
+                if (a.priority !== b.priority) {
+                    return b.priority - a.priority;
+                }
+            });
         }
     },
     created() {
@@ -169,11 +197,12 @@ export default {
         </header>
 
         <main>
-            <h2>Task List</h2>
+            <div class="spacer"></div>
+            <h2>Pending Tasks</h2>
             <table>
                 <thead>
                     <tr>
-                        <th class="small-column">ID</th>
+                        <!-- <th class="small-column">ID</th> -->
                         <th class="large-column">Description</th>
                         <th class="medium-column">Completed</th>
                         <th class="medium-column">Priority</th>
@@ -184,8 +213,8 @@ export default {
                     </tr>
                 </thead>
                 <tbody>
-                    <tr v-for="task in tasks" :key="task.id">
-                        <td class="small-column">{{ task.id }}</td>
+                    <tr v-for="task in notCompletedTask" :key="task.id">
+                        <!-- <td class="small-column">{{ task.id }}</td> -->
                         <td class="large-column">{{ task.description }}</td>
                         <td class="medium-column">{{ task.completed }}</td>
                         <td class="medium-column">{{ getPriorityLabel(task.priority) }}</td>
@@ -197,7 +226,34 @@ export default {
                 </tbody>
             </table>
 
-            <h2>Completed Task List</h2>
+            <div class="spacer"></div>
+            <h2>Completed Tasks</h2>
+            <table>
+                <thead>
+                    <tr>
+                        <!-- <th class="small-column">ID</th> -->
+                        <th class="large-column">Description</th>
+                        <th class="medium-column">Completed</th>
+                        <th class="medium-column">Priority</th>
+                        <th class="medium-column">Start Time</th>
+                        <th class="medium-column">End Time</th>
+                        <th class="medium-column">Update</th>
+                        <th class="medium-column">Delete</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr v-for="task in completedTasks" :key="task.id">
+                        <!-- <td class="small-column">{{ task.id }}</td> -->
+                        <td class="large-column">{{ task.description }}</td>
+                        <td class="medium-column">{{ task.completed }}</td>
+                        <td class="medium-column">{{ getPriorityLabel(task.priority) }}</td>
+                        <td class="medium-large-column">{{ formatDateTime(task.start_time) }}</td>
+                        <td class="medium-large-column">{{ formatDateTime(task.end_time) }}</td>
+                        <td class="medium-column"><button @click="openUpdateModal(task)">Update</button></td>
+                        <td class="medium-column"><button @click="deleteTask(task.id)">Delete</button></td>
+                    </tr>
+                </tbody>
+            </table>
         </main>
 
         <!-- Modals -->
