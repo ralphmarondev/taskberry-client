@@ -8,13 +8,16 @@ export default {
         title: {
             type: String,
             default: "Modal Title"
+        },
+        addTask: {
+            type: Function,
+            required: true
         }
     },
     data() {
         return {
             newTask: {
-                id: '',
-                name: '',
+                description: '',
                 status: '',
                 startTime: '',
                 endTime: ''
@@ -24,17 +27,25 @@ export default {
     methods: {
         closeModal() {
             this.$emit('close');
-        },
-        submitTask() {
-            this.$emit('add-task', { ...this.newTask });
-            this.closeModal();
             this.resetForm();
+        },
+        async submitTask() {
+            try {
+                await this.$http.post('http://localhost:8000/api/tasks/', {
+                    description: this.newTask.description,
+                    priority: this.newTask.priority,
+                    start_time: this.newTask.startTime,
+                    end_time: this.newTask.endTime
+                });
+                this.closeModal();
+            } catch (error) {
+                console.log(error);
+            }
         },
         resetForm() {
             this.newTask = {
-                id: '',
-                name: '',
-                status: '',
+                description: '',
+                priority: '',
                 startTime: '',
                 endTime: ''
             }
@@ -49,14 +60,11 @@ export default {
             <h2>{{ title }}</h2>
 
             <form @submit.prevent="submitTask">
-                <label for="id">ID:</label>
-                <input type="text" v-model="newTask.id" required />
+                <label for="name">Task Description:</label>
+                <input type="text" v-model="newTask.description" required />
 
-                <label for="name">Task Name:</label>
-                <input type="text" v-model="newTask.name" required />
-
-                <label for="status">Status:</label>
-                <input type="text" v-model="newTask.status" required />
+                <label for="status">Priority:</label>
+                <input type="text" v-model="newTask.priority" required />
 
                 <label for="startTime">Start Time:</label>
                 <input type="time" v-model="newTask.startTime" required />

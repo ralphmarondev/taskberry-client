@@ -9,16 +9,28 @@ export default {
         return {
             showCreateNew: false,
             tasks: [
-                { id: 1, name: "Task 1", status: "Pending", startTime: "10:00 AM", endTime: "11:00 AM" },
-                { id: 2, name: "Task 2", status: "Completed", startTime: "11:00 AM", endTime: "12:00 PM" },
+                // { id: 1, name: "Task 1", status: "Pending", startTime: "10:00 AM", endTime: "11:00 AM" },
+                // { id: 2, name: "Task 2", status: "Completed", startTime: "11:00 AM", endTime: "12:00 PM" },
                 // Add more tasks as needed
             ],
             taskToUpdate: null
         };
     },
     methods: {
-        addTask(newTask) {
-            this.tasks.push(newTask);
+        async addTask(newTask) {
+            try {
+                const response = await this.$http.post('http://localhost:8000/api/tasks/', {
+                    description: newTask.description,
+                    priority: newTask.priority,
+                    start_time: newTask.startTime,
+                    end_time: newTask.endTime
+                });
+
+                // Assuming your backend returns the created task with an ID
+                this.tasks.push(response.data);
+            } catch (error) {
+                console.error('Error adding new task:', error);
+            }
         },
         updateTask(taskId) {
             // Handle task update logic here
@@ -27,7 +39,21 @@ export default {
         deleteTask(taskId) {
             // Handle task deletion logic here
             this.tasks = this.tasks.filter(task => task.id !== taskId);
+        },
+        async getData() {
+            try {
+                const response = await this.$http.get('http://localhost:8000/api/tasks/');
+                this.tasks = response.data;
+                this.tasks.reverse();
+            } catch (error) {
+                console.log(error);
+            }
         }
+    },
+    created() {
+        // fetch tasks on page load
+        this.tasks = []
+        this.getData();
     }
 }
 </script>
@@ -55,10 +81,10 @@ export default {
                 <tbody>
                     <tr v-for="task in tasks" :key="task.id">
                         <td class="small-column">{{ task.id }}</td>
-                        <td class="large-column">{{ task.name }}</td>
-                        <td class="medium-column">{{ task.status }}</td>
-                        <td class="medium-column">{{ task.startTime }}</td>
-                        <td class="medium-column">{{ task.endTime }}</td>
+                        <td class="large-column">{{ task.description }}</td>
+                        <td class="medium-column">{{ task.priority }}</td>
+                        <td class="medium-column">{{ task.start_time }}</td>
+                        <td class="medium-column">{{ task.end_time }}</td>
                         <td class="medium-column"><button @click="updateTask(task.id)">Update</button></td>
                         <td class="medium-column"><button @click="deleteTask(task.id)">Delete</button></td>
                     </tr>
@@ -66,7 +92,7 @@ export default {
             </table>
         </main>
 
-        <CreateNewTask :visible="showCreateNew" @close="showCreateNew = false" @add-task="addTask"
+        <CreateNewTask :visible="showCreateNew" @close="showCreateNew = false" :addTask="addTask"
             title="Add New Task" />
     </div>
 </template>
