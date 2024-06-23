@@ -5,6 +5,9 @@ export default {
         return {
             tasks: [],
             loading: true,
+            sortBy: 'priority',
+            notCompletedTask: [],
+            completedTasks: [],
 
             showAddModal: false,
             showUpdateModal: false,
@@ -31,6 +34,8 @@ export default {
                 let response = await this.$http.get('http://localhost:8000/api/tasks/');
                 this.tasks = response.data
                 this.loading = false;
+
+                this.sortTasks();
             } catch (error) {
                 console.log(error);
             }
@@ -42,6 +47,8 @@ export default {
         },
         closeAddModal() {
             this.showAddModal = false;
+
+            this.sortTasks();
         },
         async addTask() {
             try {
@@ -55,6 +62,8 @@ export default {
                     start_time: '',
                     end_time: ''
                 }
+
+                this.sortTasks();
             } catch (error) {
                 console.log(`Error adding: ${error}`);
             }
@@ -70,6 +79,8 @@ export default {
         },
         closeUpdateModal() {
             this.showUpdateModal = false;
+
+            this.sortTasks();
         },
         async updateTask() {
             try {
@@ -80,6 +91,7 @@ export default {
                     this.tasks.splice(index, 1, response.data);
                 }
                 this.closeUpdateModal();
+                this.sortTasks();
             } catch (error) {
                 console.log(`Error: ${error}`);
             }
@@ -89,6 +101,7 @@ export default {
             try {
                 await this.$http.delete(`http://localhost:8000/api/tasks/${taskId}/`);
                 this.tasks = this.tasks.filter(task => task.id !== taskId);
+                this.sortTasks();
             } catch (error) {
                 console.log(`Deleting error: ${error}`);
             }
@@ -124,6 +137,21 @@ export default {
             hours = hours ? hours : 12; // midnigh (0 hours)
 
             return `${day}-${month}-${year} ${hours}:${minutes.toString().padStart(2, '0')} ${period}`;
+        },
+        sortTasks() {
+            this.tasks.sort((a, b) => {
+                // completion status
+                if (a.completed !== b.completed) {
+                    return a.completed ? 1 : -1;
+                }
+
+                if (a.priority !== b.priority) {
+                    return b.priority - a.priority;
+                }
+            });
+        },
+        updateTaskList() {
+
         }
     },
     created() {
@@ -141,6 +169,7 @@ export default {
         </header>
 
         <main>
+            <h2>Task List</h2>
             <table>
                 <thead>
                     <tr>
@@ -160,13 +189,15 @@ export default {
                         <td class="large-column">{{ task.description }}</td>
                         <td class="medium-column">{{ task.completed }}</td>
                         <td class="medium-column">{{ getPriorityLabel(task.priority) }}</td>
-                        <td class="medium-column">{{ formatDateTime(task.start_time) }}</td>
-                        <td class="medium-column">{{ formatDateTime(task.end_time) }}</td>
+                        <td class="medium-large-column">{{ formatDateTime(task.start_time) }}</td>
+                        <td class="medium-large-column">{{ formatDateTime(task.end_time) }}</td>
                         <td class="medium-column"><button @click="openUpdateModal(task)">Update</button></td>
                         <td class="medium-column"><button @click="deleteTask(task.id)">Delete</button></td>
                     </tr>
                 </tbody>
             </table>
+
+            <h2>Completed Task List</h2>
         </main>
 
         <!-- Modals -->

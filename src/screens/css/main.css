@@ -8,7 +8,7 @@ main {
 table {
   width: 90%;
   border-collapse: collapse;
-  margin: 15px 5%;
+  margin: 5px 5%;
 }
 
 th,
@@ -28,6 +28,10 @@ th {
 
 .medium-column {
   width: 80px; /* Medium width for status, time, and buttons */
+}
+
+.medium-large-column {
+  width: 120px;
 }
 
 .large-column {
