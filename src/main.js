@@ -7,3 +7,5 @@ import axios from "axios";
 const app = createApp(App);
 app.config.globalProperties.$http = axios;
 app.mount("#app");
+
+// TODO: create a root css  file

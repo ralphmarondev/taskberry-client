@@ -52,14 +52,8 @@ export default {
         },
         async addTask() {
             // input validation
-            const currentTime = new Date();
             const startTime = new Date(this.newTask.start_time);
             const endTime = new Date(this.newTask.end_time);
-
-            if (startTime < currentTime) {
-                alert('INvalid time: Start time must be greater than or equal to the current time!');
-                return;
-            }
 
             if (endTime <= startTime) {
                 alert('Invalid time: End time must be greater than start time');
@@ -142,6 +136,9 @@ export default {
                     return '';
             }
         },
+        getStatusLabel(isCompleted) {
+            return isCompleted ? 'Completed' : 'Pending';
+        },
         formatDateTime(dateTimeStr) {
             if (!dateTimeStr)
                 return '';
@@ -158,7 +155,7 @@ export default {
             hours = hours % 12
             hours = hours ? hours : 12; // midnigh (0 hours)
 
-            return `${day}-${month}-${year} ${hours}:${minutes.toString().padStart(2, '0')} ${period}`;
+            return `${month}/${day}/${year} ${hours}:${minutes.toString().padStart(2, '0')} ${period}`;
         },
         sortTasks() {
             this.tasks.sort((a, b) => {
@@ -227,7 +224,7 @@ export default {
                         <tr>
                             <!-- <th class="small-column">ID</th> -->
                             <th class="large-column">Description</th>
-                            <th class="medium-column">Completed</th>
+                            <th class="medium-column">Status</th>
                             <th class="medium-column">Priority</th>
                             <th class="medium-column">Start Time</th>
                             <th class="medium-column">End Time</th>
@@ -239,12 +236,13 @@ export default {
                         <tr v-for="task in notCompletedTask" :key="task.id">
                             <!-- <td class="small-column">{{ task.id }}</td> -->
                             <td class="large-column">{{ task.description }}</td>
-                            <td class="medium-column">{{ task.completed }}</td>
+                            <td class="medium-column">{{ getStatusLabel(task.completed) }}</td>
                             <td class="medium-column">{{ getPriorityLabel(task.priority) }}</td>
                             <td class="medium-large-column">{{ formatDateTime(task.start_time) }}</td>
                             <td class="medium-large-column">{{ formatDateTime(task.end_time) }}</td>
                             <td class="medium-column"><button @click="openUpdateModal(task)">Update</button></td>
-                            <td class="medium-column"><button @click="deleteTask(task.id)">Delete</button></td>
+                            <td class="medium-column"><button @click="deleteTask(task.id)"
+                                    style="background: red;">Delete</button></td>
                         </tr>
                     </tbody>
                 </table>
@@ -261,7 +259,7 @@ export default {
                         <tr>
                             <!-- <th class="small-column">ID</th> -->
                             <th class="large-column">Description</th>
-                            <th class="medium-column">Completed</th>
+                            <th class="medium-column">Status</th>
                             <th class="medium-column">Priority</th>
                             <th class="medium-column">Start Time</th>
                             <th class="medium-column">End Time</th>
@@ -273,12 +271,13 @@ export default {
                         <tr v-for="task in completedTasks" :key="task.id">
                             <!-- <td class="small-column">{{ task.id }}</td> -->
                             <td class="large-column">{{ task.description }}</td>
-                            <td class="medium-column">{{ task.completed }}</td>
+                            <td class="medium-column">{{ getStatusLabel(task.completed) }}</td>
                             <td class="medium-column">{{ getPriorityLabel(task.priority) }}</td>
                             <td class="medium-large-column">{{ formatDateTime(task.start_time) }}</td>
                             <td class="medium-large-column">{{ formatDateTime(task.end_time) }}</td>
                             <td class="medium-column"><button @click="openUpdateModal(task)">Update</button></td>
-                            <td class="medium-column"><button @click="deleteTask(task.id)">Delete</button></td>
+                            <td class="medium-column"><button @click="deleteTask(task.id)"
+                                    style="background: red;">Delete</button></td>
                         </tr>
                     </tbody>
                 </table>
@@ -357,3 +356,13 @@ export default {
 @import url('css/main.css');
 @import url('css/modal.css');
 </style>
+
+<!-- TODO: instead of delete [label it as deleted] for recycle purposes -->
+
+<!-- 
+
+https://github.com/ralphmarondev/client
+
+https://github.com/ralphmarondev/api
+
+-->
