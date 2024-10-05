@@ -1,11 +1,10 @@
-import { createApp } from "vue";
-import App from "./App.vue";
-import axios from "axios";
+import { createApp } from 'vue';
+import App from './App.vue';
+import router from './router';
 
-// set a prototype for https
+import '@/assets/scss/config/app.scss';
+import 'bootstrap/dist/js/bootstrap.bundle';
 
 const app = createApp(App);
-app.config.globalProperties.$http = axios;
-app.mount("#app");
-
-// TODO: create a root css  file
+app.use(router);
+app.mount('#app');
