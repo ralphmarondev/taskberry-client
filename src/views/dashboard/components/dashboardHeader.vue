@@ -3,7 +3,7 @@
     class="navbar navbar-expand-lg navbar-light bg-light d-flex align-items-center py-3 sticky-top px-5"
   >
     <div class="container-fluid">
-      <a href="#" class="navbar-brand">TaskBerry</a>
+      <a href="#" class="navbar-brand text-primary">TaskBerry</a>
       <button
         class="navbar-toggler"
         type="button"

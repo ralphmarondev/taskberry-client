@@ -1,4 +1,15 @@
-<script setup></script>
+<script setup>
+  import { defineModel } from 'vue';
+
+  const title = defineModel('title');
+  const description = defineModel('description');
+
+  const onSaveTask = () => {
+    console.log(
+      `Saving... Title: ${title.value}, Description: ${description.value}`
+    );
+  };
+</script>
 
 <template>
   <div
@@ -11,7 +22,9 @@
     <div class="modal-dialog">
       <div class="modal-content">
         <div class="modal-header">
-          <h5 class="modal-title" id="new-task-modal">Create New Task</h5>
+          <h5 class="modal-title text-primary" id="new-task-modal">
+            Create New Task
+          </h5>
           <button
             type="button"
             class="btn-close"
@@ -19,19 +32,43 @@
             aria-label="Close"
           ></button>
         </div>
-        <div class="modal-body">
-          <h5>Hello there</h5>
-        </div>
-        <div class="modal-footer">
-          <button
-            type="button"
-            class="btn btn-secondary"
-            data-bs-dismiss="modal"
-          >
-            Close
-          </button>
-          <button type="button" class="btn btn-primary">Save changes</button>
-        </div>
+        <form>
+          <div class="modal-body">
+            <div class="mb-3">
+              <label for="title" class="form-label">Title</label>
+              <input
+                type="text"
+                name="title"
+                id="title"
+                class="form-control"
+                placeholder="Title"
+                v-model="title"
+              />
+            </div>
+            <label for="description" class="form-label">Description</label>
+            <input
+              type="text"
+              name="description"
+              id="description"
+              class="form-control"
+              placeholder="Description"
+              v-model="description"
+            />
+            <div class="mb3"></div>
+          </div>
+          <div class="modal-footer">
+            <button
+              type="button"
+              class="btn btn-secondary"
+              data-bs-dismiss="modal"
+            >
+              Cancel
+            </button>
+            <button type="button" class="btn btn-primary" @click="onSaveTask">
+              Save Task
+            </button>
+          </div>
+        </form>
       </div>
     </div>
   </div>

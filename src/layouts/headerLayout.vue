@@ -20,11 +20,11 @@
         <span class="navbar-toggler-icon"></span>
       </button>
       <div class="collapse navbar-collapse ms-5" id="navbar-supported-content">
-        <ul class="navbar-nav me-auto mb-2 lg-0">
-          <li class="nav-item">
+        <ul class="navbar-nav mx-auto mb-2 lg-0">
+          <li class="nav-item mx-2">
             <a href="#home" class="nav-link active" aria-current="page">Home</a>
           </li>
-          <li class="nav-item">
+          <li class="nav-item mx-2">
             <a href="#about" class="nav-link active">About</a>
           </li>
         </ul>
