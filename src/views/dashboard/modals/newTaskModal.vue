@@ -1,5 +1,6 @@
 <script setup>
   import { defineModel } from 'vue';
+  import axiosIntance from '@/axiosInstance';
 
   const title = defineModel('title');
   const description = defineModel('description');
@@ -8,6 +9,20 @@
     console.log(
       `Saving... Title: ${title.value}, Description: ${description.value}`
     );
+    axiosIntance
+      .post('tasks/', {
+        title: title.value,
+        description: description.value,
+      })
+      .then(() => {
+        console.log('Saved.');
+
+        title.value = '';
+        description.value = '';
+      })
+      .catch((error) => {
+        console.error('Error:', error);
+      });
   };
 </script>
 
@@ -32,7 +47,7 @@
             aria-label="Close"
           ></button>
         </div>
-        <form>
+        <form @submit.prevent="onSaveTask">
           <div class="modal-body">
             <div class="mb-3">
               <label for="title" class="form-label">Title</label>
@@ -64,9 +79,7 @@
             >
               Cancel
             </button>
-            <button type="button" class="btn btn-primary" @click="onSaveTask">
-              Save Task
-            </button>
+            <button type="submit" class="btn btn-primary">Save Task</button>
           </div>
         </form>
       </div>
