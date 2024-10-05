@@ -7,4 +7,12 @@ export default [
     },
     component: () => import('@/views/home/homeIndex.vue'),
   },
+  {
+    path: '/dashboard',
+    name: 'dashboard',
+    meta: {
+      title: 'Dashboard',
+    },
+    component: () => import('@/views/dashboard/dashboardIndex.vue'),
+  },
 ];
