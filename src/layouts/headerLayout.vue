@@ -28,15 +28,14 @@
             <a href="#about" class="nav-link active">About</a>
           </li>
         </ul>
-      </div>
-
-      <div class="d-flex">
-        <router-link
-          to="/dashboard"
-          class="btn btn-outline-primary px-4 fw-semibold fs-6"
-        >
-          GET STARTED
-        </router-link>
+        <div class="d-flex">
+          <router-link
+            to="/dashboard"
+            class="btn btn-outline-primary px-4 fw-semibold fs-6"
+          >
+            GET STARTED
+          </router-link>
+        </div>
       </div>
     </div>
   </nav>
